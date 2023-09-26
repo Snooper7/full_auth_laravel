@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\Auth\EmailVerificationPromtController;
+use App\Http\Controllers\Auth\PasswordConfirmationController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\VerificationEmailController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,7 +36,14 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])->mid
 Route::get('/reset-password', [ResetPasswordController::class, 'create'])->middleware('guest')->name('password.reset');
 Route::post('/reset-password', [ResetPasswordController::class, 'store'])->middleware('guest')->name('password.update');
 
+Route::get('/email/verify', [EmailVerificationPromtController::class, '__invoke'])->middleware('auth')->name('verification.notice');
+Route::get('/email/verify/{id}/{hash}', [VerificationEmailController::class, '__invoke'])->middleware(['auth', 'signed'])->name('verification.verify');
+Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, '__invoke'])->middleware('auth')->name('verification.send');
 
-Route::view('/dashboard', 'dashboard')->middleware('auth')->name('dashboard');
+Route::view('/dashboard', 'dashboard')->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/profile', fn () => 'Protected area')->middleware(['auth', 'verified', 'password.confirm'])->name('profile');
+
+Route::get('/confirm-password', [PasswordConfirmationController::class, 'show'])->middleware('auth')->name('password.confirm');
+Route::post('/confirm-password', [PasswordConfirmationController::class, 'store'])->middleware('auth');
 
 
