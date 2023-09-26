@@ -36,7 +36,7 @@
             </h2>
         </div>
         <div class="bg-white/80 backdrop-blur-xl mt-6 sm:mt-10 mx-auto rounded-xl shadow-xl p-6 sm:p-10 max-w-md w-full">
-            <form action="{{ route('login') }}" method="post" novalidate autocomplete="off">
+            <form action="{{ route('login') }}" method="post"  autocomplete="off">
                 @csrf
 
                 @if (session('status'))
